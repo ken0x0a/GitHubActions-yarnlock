@@ -27,5 +27,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npx --yes yarn-deduplicate -s fewer
       - run: git diff -s --exit-code
-      - if: failure()
-        run: echo 'Please run `npx --yes yarn-deduplicate -s fewer`'
+      - uses: actions/github-script@v6
+        if: failure()
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Thanks for reporting!'
+            })
